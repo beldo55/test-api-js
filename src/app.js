@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
+const path = require("path");
 
 const { env } = require("./config/env");
 const { swaggerSpec } = require("./swagger");
@@ -49,6 +50,9 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+const swaggerUiDistPath = path.dirname(require.resolve("swagger-ui-dist/swagger-ui-bundle.js"));
+app.use("/api-docs", express.static(swaggerUiDistPath));
 app.use(
   "/api-docs",
   swaggerUi.serve,
