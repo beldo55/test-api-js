@@ -52,7 +52,7 @@ app.use((req, res, next) => {
 
 const swaggerUiDistPath = path.dirname(require.resolve("swagger-ui-dist/swagger-ui-bundle.js"));
 app.get("/api-docs/swagger-ui-init.js", (_req, res) => {
-  res.type("application/javascript").send(`
+  res.set("Cache-Control", "no-store").type("application/javascript").send(`
     window.onload = function () {
       window.ui = SwaggerUIBundle({
         url: "/api-docs.json",
@@ -65,9 +65,8 @@ app.get("/api-docs/swagger-ui-init.js", (_req, res) => {
     };
   `);
 });
-app.use("/api-docs", express.static(swaggerUiDistPath));
 app.get("/api-docs/", (_req, res) => {
-  res.type("html").send(`<!doctype html>
+  res.set("Cache-Control", "no-store").type("html").send(`<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -79,10 +78,22 @@ app.get("/api-docs/", (_req, res) => {
     <div id="swagger-ui"></div>
     <script src="/api-docs/swagger-ui-bundle.js"></script>
     <script src="/api-docs/swagger-ui-standalone-preset.js"></script>
-    <script src="/api-docs/swagger-ui-init.js"></script>
+    <script>
+      window.onload = function () {
+        window.ui = SwaggerUIBundle({
+          url: "/api-docs.json",
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+          layout: "StandaloneLayout"
+        });
+      };
+    </script>
   </body>
 </html>`);
 });
+app.use("/api-docs", express.static(swaggerUiDistPath));
 app.get("/api-docs.json", (_req, res) => res.json(swaggerSpec));
 
 // --- Health check ---
