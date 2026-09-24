@@ -1,4 +1,5 @@
 const swaggerJsdoc = require("swagger-jsdoc");
+const path = require("path");
 const { env } = require("./config/env");
 const { swaggerSchemas } = require("./swagger-docs");
 
@@ -13,7 +14,9 @@ const options = {
         "All successful responses follow `{ success, message, data, meta? }`; all errors follow `{ success, message, error: { code, details } }`.",
       contact: { name: "Express Neon Practice API" },
     },
-    servers: [{ url: `http://localhost:${env.port}`, description: "Local development server" }],
+    // A relative server URL makes Swagger's "Try it out" use the current
+    // origin: localhost in development and the Vercel deployment in production.
+    servers: [{ url: "/", description: "Current deployment" }],
     tags: [
       { name: "Auth", description: "Registration, login, logout, password reset" },
       { name: "Protected", description: "Simple practice routes that require authentication" },
@@ -39,7 +42,8 @@ const options = {
     },
   },
   // Scan route files for @openapi JSDoc comments.
-  apis: ["./src/routes/*.js"],
+  // __dirname is stable in Vercel's serverless filesystem; process.cwd() is not.
+  apis: [path.join(__dirname, "routes", "*.js").replaceAll(path.sep, "/")],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

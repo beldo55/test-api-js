@@ -234,7 +234,7 @@ This repository includes a Vercel serverless entry point at `api/index.js`. It i
    ```
 
    Do not use `prisma migrate dev`, `prisma migrate reset`, or `npm run seed` as a Vercel build command: those are development/destructive operations. The `postinstall` script only runs `prisma generate`, which makes Prisma Client available to the function.
-4. Deploy. Your API will be available at `https://your-project.vercel.app`, with Swagger at `/api-docs`.
+4. Deploy. Your API will be available at `https://your-project.vercel.app`, with Swagger at `/api-docs`. The deployed Swagger UI uses the current site as its API server, so **Try it out** sends requests to the Vercel URL instead of `localhost`.
 
 For cookie-based browser authentication, `CLIENT_URL` must exactly match the frontend origin and frontend requests must use `credentials: "include"`. If the frontend is hosted on a different site, browsers may block third-party cookies; hosting it on the same domain/subdomain is the most reliable approach.
 
