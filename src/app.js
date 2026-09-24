@@ -52,7 +52,13 @@ app.use((req, res, next) => {
 });
 
 const swaggerUiDistPath = path.dirname(require.resolve("swagger-ui-dist/swagger-ui-bundle.js"));
-app.use("/api-docs", express.static(swaggerUiDistPath));
+const serveSwaggerUiAssets = express.static(swaggerUiDistPath);
+app.use("/api-docs", (req, res, next) => {
+  if (req.path === "/swagger-ui-init.js") {
+    return next();
+  }
+  serveSwaggerUiAssets(req, res, next);
+});
 app.use(
   "/api-docs",
   swaggerUi.serve,
