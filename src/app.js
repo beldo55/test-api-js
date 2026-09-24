@@ -3,7 +3,6 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const swaggerUi = require("swagger-ui-express");
 const path = require("path");
 
 const { env } = require("./config/env");
@@ -52,21 +51,38 @@ app.use((req, res, next) => {
 });
 
 const swaggerUiDistPath = path.dirname(require.resolve("swagger-ui-dist/swagger-ui-bundle.js"));
-const serveSwaggerUiAssets = express.static(swaggerUiDistPath);
-app.use("/api-docs", (req, res, next) => {
-  if (req.path === "/swagger-ui-init.js") {
-    return next();
-  }
-  serveSwaggerUiAssets(req, res, next);
+app.get("/api-docs/swagger-ui-init.js", (_req, res) => {
+  res.type("application/javascript").send(`
+    window.onload = function () {
+      window.ui = SwaggerUIBundle({
+        url: "/api-docs.json",
+        dom_id: "#swagger-ui",
+        deepLinking: true,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+        layout: "StandaloneLayout"
+      });
+    };
+  `);
 });
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customSiteTitle: "Express Neon Practice API Docs",
-    swaggerOptions: { url: "/api-docs.json" },
-  })
-);
+app.use("/api-docs", express.static(swaggerUiDistPath));
+app.get("/api-docs/", (_req, res) => {
+  res.type("html").send(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Express Neon Practice API Docs</title>
+    <link rel="stylesheet" href="/api-docs/swagger-ui.css">
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="/api-docs/swagger-ui-bundle.js"></script>
+    <script src="/api-docs/swagger-ui-standalone-preset.js"></script>
+    <script src="/api-docs/swagger-ui-init.js"></script>
+  </body>
+</html>`);
+});
 app.get("/api-docs.json", (_req, res) => res.json(swaggerSpec));
 
 // --- Health check ---
