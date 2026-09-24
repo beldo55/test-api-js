@@ -38,12 +38,25 @@ app.get("/",
   (_req, res) => res.send(/*html*/ `
   <h1>Express Neon Practice API</h1>
   <p>Welcome to the Express Neon Practice API! This is a sample API built with Express.js and Neon, demonstrating various features and best practices for building RESTful APIs.</p>
-  <p>For more information, visit the <a href="https://test-api-js.vercel.app/api-docs">API documentation</a>.</p>
+  <p>For more information, visit the <a href="${env.clientUrl}/api-docs">API documentation</a>.</p>
   `
      ));
 
 // --- Swagger docs ---
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customSiteTitle: "Express Neon Practice API Docs" }));
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api-docs") {
+    return res.redirect(301, "/api-docs/");
+  }
+  next();
+});
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: "Express Neon Practice API Docs",
+    swaggerOptions: { url: "/api-docs.json" },
+  })
+);
 app.get("/api-docs.json", (_req, res) => res.json(swaggerSpec));
 
 // --- Health check ---
