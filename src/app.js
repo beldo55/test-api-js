@@ -78,18 +78,7 @@ app.get("/api-docs/", (_req, res) => {
     <div id="swagger-ui"></div>
     <script src="/api-docs/swagger-ui-bundle.js"></script>
     <script src="/api-docs/swagger-ui-standalone-preset.js"></script>
-    <script>
-      window.onload = function () {
-        window.ui = SwaggerUIBundle({
-          url: "/api-docs.json",
-          dom_id: "#swagger-ui",
-          deepLinking: true,
-          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
-          layout: "StandaloneLayout"
-        });
-      };
-    </script>
+    <script src="/api-docs/swagger-ui-init.js"></script>
   </body>
 </html>`);
 });
