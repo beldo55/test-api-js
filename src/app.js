@@ -34,6 +34,13 @@ app.use(morgan(env.isProduction ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.get("/", 
+  (_req, res) => res.send(/*html*/ `
+  <h1>Express Neon Practice API</h1>
+  <p>Welcome to the Express Neon Practice API! This is a sample API built with Express.js and Neon, demonstrating various features and best practices for building RESTful APIs.</p>
+  <p>For more information, visit the <a href="https://test-api-js.vercel.app/api-docs">API documentation</a>.</p>
+  `
+     ));
 
 // --- Swagger docs ---
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customSiteTitle: "Express Neon Practice API Docs" }));
